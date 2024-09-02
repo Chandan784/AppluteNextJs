@@ -30,7 +30,7 @@ export default function RootLayout({ children }) {
                   href="/"
                   className="hover:text-gray-400 transition-colors"
                 >
-                  Course App
+                  Applute
                 </Link>
               </div>
               <div className="hidden md:flex space-x-4">

@@ -13,7 +13,9 @@ export default function CoursePage({ params }) {
   const [isLoading, setIsLoading] = useState(false);
   let courseid = params.id;
   let user = JSON.parse(localStorage.getItem("user"));
-  console.log("user ", user._id);
+  if (user) {
+    console.log("user ", user._id);
+  }
 
   useEffect(() => {
     if (courseid) {
@@ -67,90 +69,100 @@ export default function CoursePage({ params }) {
   }, [playingUrl, player]);
 
   const handleBuyNow = async () => {
-    setIsLoading(true);
-    try {
-      const res = await fetch("/api/payment/createOrder", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: course.price * 100 }), // Amount in the smallest currency unit
-      });
-      const { id, currency, amount } = await res.json();
+    if (user == null) {
+      toast.success(" first login");
+    } else {
+      setIsLoading(true);
+      try {
+        const res = await fetch("/api/payment/createOrder", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amount: course.price * 100 }), // Amount in the smallest currency unit
+        });
+        const { id, currency, amount } = await res.json();
 
-      const scriptLoaded = await loadRazorpayScript();
-      if (!scriptLoaded) {
-        toast.error("Failed to load payment script.");
-        setIsLoading(false);
-        return;
-      }
+        const scriptLoaded = await loadRazorpayScript();
+        if (!scriptLoaded) {
+          toast.error("Failed to load payment script.");
+          setIsLoading(false);
+          return;
+        }
 
-      const options = {
-        key: "rzp_live_0hcX6BTQ9RtC5P",
-        amount,
-        currency,
-        name: "Your App Name",
-        description: "Course Purchase",
-        order_id: id,
-        handler: async function (response) {
-          const { razorpay_payment_id, razorpay_order_id, razorpay_signature } =
-            response;
+        const options = {
+          key: "rzp_live_0hcX6BTQ9RtC5P",
+          amount,
+          currency,
+          name: "Your App Name",
+          description: "Course Purchase",
+          order_id: id,
+          handler: async function (response) {
+            const {
+              razorpay_payment_id,
+              razorpay_order_id,
+              razorpay_signature,
+            } = response;
 
-          const verificationRes = await fetch("/api/payment/verifyPayment", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              paymentId: razorpay_payment_id,
-              orderId: razorpay_order_id,
-              signature: razorpay_signature,
-            }),
-          });
-          const data = await verificationRes.json();
-          if (data.success) {
-            toast.success("Payment successful!");
+            const verificationRes = await fetch("/api/payment/verifyPayment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                paymentId: razorpay_payment_id,
+                orderId: razorpay_order_id,
+                signature: razorpay_signature,
+              }),
+            });
+            const data = await verificationRes.json();
+            if (data.success) {
+              toast.success("Payment successful!");
 
-            console.log(user, "user");
+              console.log(user, "user");
 
-            // Call the API to update purchased courses
-            const updateRes = await fetch(
-              "/api/courses/updatePurchasedCourses",
-              {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId: user._id, courseId: courseid }),
+              // Call the API to update purchased courses
+              const updateRes = await fetch(
+                "/api/courses/updatePurchasedCourses",
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    userId: user._id,
+                    courseId: courseid,
+                  }),
+                }
+              );
+
+              const updateData = await updateRes.json();
+              if (updateData.success) {
+                toast.success("Course added to your account!");
+                // Redirect or update UI here
+                // Example: window.location.href = "/my-courses";
+              } else {
+                toast.error("Failed to add course to your account.");
               }
-            );
-
-            const updateData = await updateRes.json();
-            if (updateData.success) {
-              toast.success("Course added to your account!");
-              // Redirect or update UI here
-              // Example: window.location.href = "/my-courses";
             } else {
-              toast.error("Failed to add course to your account.");
+              toast.error("Payment verification failed!");
             }
-          } else {
-            toast.error("Payment verification failed!");
-          }
-        },
-        prefill: {
-          name: "User Name",
-          email: "user@example.com",
-          contact: "1234567890",
-        },
-        notes: {
-          address: "User Address",
-        },
-        theme: {
-          color: "#3399cc",
-        },
-      };
+          },
+          prefill: {
+            name: "User Name",
+            email: "user@example.com",
+            contact: "1234567890",
+          },
+          notes: {
+            address: "User Address",
+          },
+          theme: {
+            color: "#3399cc",
+          },
+        };
 
-      const paymentObject = new window.Razorpay(options);
-      paymentObject.open();
-    } catch (error) {
-      console.error("Error during payment:", error);
-      toast.error("An error occurred during the payment process.");
+        const paymentObject = new window.Razorpay(options);
+        paymentObject.open();
+      } catch (error) {
+        console.error("Error during payment:", error);
+        toast.error("An error occurred during the payment process.");
+      }
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const loadRazorpayScript = () => {
