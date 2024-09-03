@@ -8,7 +8,7 @@ import {
   checkUserInLocalStorage,
 } from "@/app/store/slices/userSlice";
 import Link from "next/link";
-import LanguageModal from "./LanguageModal"; // Adjust path as needed
+import LanguageModal from "./languageModal"; // Adjust path as needed
 
 const Header = () => {
   const dispatch = useDispatch();
