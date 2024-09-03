@@ -211,7 +211,7 @@ const Header = () => {
                 Home
               </Link>
               <Link
-                href="/mycourse"
+                href="/courses/mycourse"
                 className="block hover:bg-gray-700 px-4 py-2 rounded transition-colors"
               >
                 My Courses
