@@ -33,15 +33,32 @@ export default function MyCoursesPage() {
 
     fetchCourses();
   }, []);
-
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="loader"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="loader"></div> {/* Circular Progress Bar */}
+        <style jsx>{`
+          .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+          }
+
+          @keyframes spin {
+            0% {
+              transform: rotate(0deg);
+            }
+            100% {
+              transform: rotate(360deg);
+            }
+          }
+        `}</style>
       </div>
     );
   }
-
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-4">My Courses</h1>

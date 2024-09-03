@@ -14,7 +14,7 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
           href="https://fonts.googleapis.com/icon?family=Material+Icons"
         />
-        <title>Course Selling App</title>
+        <title>Applute</title>
       </head>
       <body>
         <Provider store={store}>
