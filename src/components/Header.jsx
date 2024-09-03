@@ -11,7 +11,6 @@ const Header = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -36,9 +35,9 @@ const Header = () => {
   return (
     <header className="fixed top-0 left-0 w-full bg-gray-900 text-white shadow-md z-50">
       <nav className="container mx-auto flex items-center justify-between p-4">
-        <div className="text-xl font-bold">
+        <div className="text-lg lg:text-xl font-bold">
           <Link href="/" className="hover:text-gray-400 transition-colors">
-            Course App
+            Applute
           </Link>
         </div>
 
@@ -68,26 +67,26 @@ const Header = () => {
         </div>
 
         {/* Search Bar (Mobile) */}
-        <div className="relative flex-grow md:hidden">
+        <div className="relative flex-grow md:hidden flex justify-center mx-4">
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search..."
-            className="w-full bg-gray-800 text-white rounded-full pl-12 pr-4 py-2 outline-none text-sm"
+            className="bg-gray-800 text-white rounded-full pl-8 pr-4 py-2 outline-none text-xs max-w-xs w-full "
           />
           <button
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400"
             onClick={handleSearch}
           >
-            <span className="material-icons">search</span>
+            <span className="material-icons   text-xs">search for </span>
           </button>
           {searchTerm && (
             <button
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400"
               onClick={() => setSearchTerm("")}
             >
-              <span className="material-icons">close</span>
+              <span className="material-icons text-sm">close</span>
             </button>
           )}
         </div>
