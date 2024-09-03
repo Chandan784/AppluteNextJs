@@ -19,7 +19,6 @@ const Header = () => {
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
-    setIsSearchOpen(false); // Close search bar when sidebar is opened
   };
 
   const handleSearch = () => {
@@ -73,13 +72,13 @@ const Header = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search..."
-            className="bg-gray-800 text-white rounded-full pl-8 pr-4 py-2 outline-none text-xs max-w-xs w-full "
+            className="bg-gray-800 text-white rounded-full pl-8 pr-4 py-2 outline-none text-xs max-w-xs w-full"
           />
           <button
             className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400"
             onClick={handleSearch}
           >
-            <span className="material-icons   text-xs">search for </span>
+            <span className="material-icons text-xs">search</span>
           </button>
           {searchTerm && (
             <button
@@ -110,6 +109,18 @@ const Header = () => {
             className="hover:bg-gray-800 px-4 py-2 rounded transition-colors"
           >
             Contact Us
+          </Link>
+          <Link
+            href="/language"
+            className="hover:bg-gray-800 px-4 py-2 rounded transition-colors"
+          >
+            Language
+          </Link>
+          <Link
+            href="/settings"
+            className="hover:bg-gray-800 px-4 py-2 rounded transition-colors"
+          >
+            Settings
           </Link>
           {!isAuthenticated ? (
             <>
@@ -173,6 +184,18 @@ const Header = () => {
                 className="block hover:bg-gray-700 px-4 py-2 rounded transition-colors"
               >
                 Contact Us
+              </Link>
+              <Link
+                href="/language"
+                className="block hover:bg-gray-700 px-4 py-2 rounded transition-colors"
+              >
+                Language
+              </Link>
+              <Link
+                href="/settings"
+                className="block hover:bg-gray-700 px-4 py-2 rounded transition-colors"
+              >
+                Settings
               </Link>
               {!isAuthenticated ? (
                 <>

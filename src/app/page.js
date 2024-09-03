@@ -15,7 +15,7 @@ export default function HomePage() {
 
   return (
     <div>
-      <h1>Welcome to the Course Selling App</h1>
+      <h1>Welcome to Applute</h1>
       <ul>
         <CourseList />
       </ul>
