@@ -1,16 +1,21 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { selectIsAuthenticated } from "@/app/store/slices/userSlice";
-import { checkUserInLocalStorage } from "@/app/store/slices/userSlice";
+import {
+  selectIsAuthenticated,
+  checkUserInLocalStorage,
+} from "@/app/store/slices/userSlice";
 import Link from "next/link";
+import LanguageModal from "./LanguageModal"; // Adjust path as needed
 
 const Header = () => {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -30,6 +35,38 @@ const Header = () => {
   const handleProfileClick = () => {
     router.push("/profile");
   };
+
+  const toggleLanguageModal = () => {
+    setIsLanguageModalOpen(!isLanguageModalOpen);
+  };
+
+  const languages = [
+    "Hindi (हिन्दी)",
+    "Bengali (বাংলা)",
+    "Telugu (తెలుగు)",
+    "Marathi (मराठी)",
+    "Tamil (தமிழ்)",
+    "Urdu (اردو)",
+    "Gujarati (ગુજરાતી)",
+    "Malayalam (മലയാളം)",
+    "Kannada (ಕನ್ನಡ)",
+    "Odia (ଓଡ଼ିଆ)",
+    "Punjabi (ਪੰਜਾਬੀ)",
+    "Assamese (অসমীয়া)",
+    "Maithili (मैथिली)",
+    "Santali (ᱥᱟᱱᱛᱟᱲᱤ)",
+    "Konkani (कोंकणी)",
+    "Nepali (नेपाली)",
+    "Kashmiri (कश्मीरी / کشمیری)",
+    "Sindhi (سنڌي / सिंधी)",
+    "Dogri (डोगरी)",
+    "Manipuri (মৈইপꯗ / মণিপুরী)",
+    "Sanskrit (संस्कृत)",
+    "Tulu (ತುಳು)",
+    "Bodo (बड़ो)",
+    "Koya (कोया)",
+    "Warli (वारली)",
+  ];
 
   return (
     <header className="fixed top-0 left-0 w-full bg-gray-900 text-white shadow-md z-50">
@@ -99,7 +136,7 @@ const Header = () => {
             Home
           </Link>
           <Link
-            href="/my-courses"
+            href="/courses/mycourse"
             className="hover:bg-gray-800 px-4 py-2 rounded transition-colors"
           >
             My Courses
@@ -110,12 +147,12 @@ const Header = () => {
           >
             Contact Us
           </Link>
-          <Link
-            href="/language"
+          <button
+            onClick={toggleLanguageModal}
             className="hover:bg-gray-800 px-4 py-2 rounded transition-colors"
           >
             Language
-          </Link>
+          </button>
           <Link
             href="/settings"
             className="hover:bg-gray-800 px-4 py-2 rounded transition-colors"
@@ -174,7 +211,7 @@ const Header = () => {
                 Home
               </Link>
               <Link
-                href="/my-courses"
+                href="/mycourse"
                 className="block hover:bg-gray-700 px-4 py-2 rounded transition-colors"
               >
                 My Courses
@@ -185,12 +222,12 @@ const Header = () => {
               >
                 Contact Us
               </Link>
-              <Link
-                href="/language"
-                className="block hover:bg-gray-700 px-4 py-2 rounded transition-colors"
+              <button
+                onClick={toggleLanguageModal}
+                className="block hover:bg-gray-700 px-4 py-2 rounded transition-colors w-full text-left"
               >
                 Language
-              </Link>
+              </button>
               <Link
                 href="/settings"
                 className="block hover:bg-gray-700 px-4 py-2 rounded transition-colors"
@@ -224,6 +261,13 @@ const Header = () => {
           </div>
         </div>
       )}
+
+      {/* Language Modal */}
+      <LanguageModal
+        isOpen={isLanguageModalOpen}
+        onClose={toggleLanguageModal}
+        languages={languages}
+      />
     </header>
   );
 };

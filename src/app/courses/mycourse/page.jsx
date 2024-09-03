@@ -1,73 +1,82 @@
-// "use client";
+"use client";
 
-// import { useEffect, useState } from "react";
-// import { useRouter } from "next/router";
-// import { toast, ToastContainer } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { toast } from "react-toastify";
 
-// const MyCourses = () => {
-//   const [loading, setLoading] = useState(true);
+export default function MyCoursesPage() {
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-//   let [MyCourses, setMyCourses] = useState([]);
-//   let user = JSON.parse(localStorage.getItem("user"));
-//   let userId = user._id;
-//   console.log("user ", user);
-//   useEffect(() => {
-//     if (userId) {
-//       const fetchCourses = async () => {
-//         try {
-//           setMyCourses([user.purchasedCourses]);
-//         } catch (error) {
-//           toast.error("An error occurred while fetching courses");
-//         } finally {
-//           setLoading(false);
-//         }
-//       };
+  useEffect(() => {
+    let user = JSON.parse(localStorage.getItem("user"));
+    console.log(user);
 
-//       fetchCourses();
-//     }
-//   }, [userId]);
-//   console.log(MyCourses);
+    if (user == null) {
+      toast.error("first login");
+      router.push("/auth/login");
+      return;
+    }
+    const fetchCourses = async () => {
+      try {
+        const userId = user._id; // Replace with dynamic user ID if available
+        const response = await axios.get(`/api/userPurchasedCourses/${userId}`);
+        setCourses(response.data.courses);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-//   if (loading) return <p>Loading...</p>;
+    fetchCourses();
+  }, []);
 
-//   return (
-//     <div className="container mx-auto p-4 lg:px-72">
-//       <ToastContainer />
-//       <h1 className="text-3xl font-bold mb-4">My Courses</h1>
-//       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-//         {MyCourses.map((course) => (
-//           <div
-//             key={course._id}
-//             className="bg-white shadow-md rounded-lg overflow-hidden"
-//           >
-//             <img
-//               src={course.thumbnail || "/default-course-image.jpg"}
-//               alt={course.title}
-//               className="w-full h-32 object-cover"
-//             />
-//             <div className="p-4">
-//               <h2 className="text-xl font-bold">{course.title}</h2>
-//               <p className="text-gray-700">{course.description}</p>
-//               <p className="text-green-600 font-bold">₹{course.price}</p>
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="loader"></div>
+      </div>
+    );
+  }
 
-// export default MyCourses;
-
-import React from "react";
-
-function page() {
   return (
-    <div>
-      <h1>my courses</h1>
+    <div className="container mx-auto p-4">
+      <h1 className="text-3xl font-bold mb-4">My Courses</h1>
+      {courses.length === 0 ? (
+        <p>No courses found.</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {courses.map((course) => (
+            <div
+              key={course.id}
+              className="bg-white shadow-md rounded-lg overflow-hidden"
+            >
+              <img
+                src={course.thumbnail}
+                alt={course.title}
+                className="w-full h-40 object-cover"
+              />
+              <div className="p-4">
+                <h2 className="text-xl font-semibold">{course.title}</h2>
+                <p className="text-gray-700">{course.description}</p>
+                <button
+                  onClick={() =>
+                    router.push(`/courses/coursePlay/${course._id}`)
+                  }
+                  className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
+                >
+                  Watch Now
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
-export default page;
+// Add this CSS to your global stylesheet (e.g., styles/globals.css)
