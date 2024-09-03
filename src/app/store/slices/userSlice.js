@@ -1,4 +1,3 @@
-// src/store/slices/userSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -17,8 +16,27 @@ export const userSlice = createSlice({
     userInfo: null,
     status: "idle",
     error: null,
+    isAuthenticated: false, // Add authentication status
   },
-  reducers: {},
+  reducers: {
+    setUser: (state, action) => {
+      state.userInfo = action.payload;
+      state.isAuthenticated = true;
+      localStorage.setItem("user", JSON.stringify(action.payload));
+    },
+    clearUser: (state) => {
+      state.userInfo = null;
+      state.isAuthenticated = false;
+      localStorage.removeItem("user");
+    },
+    checkUserInLocalStorage: (state) => {
+      const user = localStorage.getItem("user");
+      if (user) {
+        state.userInfo = JSON.parse(user);
+        state.isAuthenticated = true;
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(registerUser.pending, (state) => {
@@ -27,6 +45,8 @@ export const userSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.userInfo = action.payload;
+        state.isAuthenticated = true;
+        localStorage.setItem("user", JSON.stringify(action.payload));
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.status = "failed";
@@ -35,8 +55,12 @@ export const userSlice = createSlice({
   },
 });
 
+export const { setUser, clearUser, checkUserInLocalStorage } =
+  userSlice.actions;
+
 export const selectUser = (state) => state.user.userInfo;
 export const selectUserStatus = (state) => state.user.status;
 export const selectUserError = (state) => state.user.error;
+export const selectIsAuthenticated = (state) => state.user.isAuthenticated;
 
 export default userSlice.reducer;
