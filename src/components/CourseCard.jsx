@@ -14,14 +14,20 @@ export default function CourseCard({ course }) {
             {course.title}
           </div>
           <p className="text-gray-700 text-base mb-4">
-            {course.description.length > 100
-              ? course.description.substring(0, 100) + "..."
-              : course.description}
+            Created by Applute Team
           </p>
           <div className="flex items-center justify-between mb-4">
-            <p className="text-green-600 font-bold text-lg">₹{course.price}</p>
+            <div className="flex flex-col items-start">
+              <p className="text-green-600 font-bold text-lg">
+                ₹{course.price}
+              </p>
+
+              <p className="text-gray-500 text-sm line-through mt-1">
+                ₹{"10,000"}
+              </p>
+            </div>
             <Link href={`/courses/${course._id}`}>
-              <p className="inline-block bg-blue-600 text-white font-semibold py-2 px-4 rounded-full hover:bg-blue-700">
+              <p className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-full hover:bg-blue-700">
                 View Details
               </p>
             </Link>

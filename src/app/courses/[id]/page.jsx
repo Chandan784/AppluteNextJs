@@ -201,7 +201,7 @@ export default function CoursePage({ params }) {
             </span>
             <p className="text-gray-700 mb-4">{course.description}</p>
             <div className="tabs">
-              <ul className="flex border-b border-gray-200">
+              <ul className="flex border-b border-gray-200 justify-around">
                 <li
                   className={`cursor-pointer py-2 px-4 text-center ${
                     activeTab === "content"
