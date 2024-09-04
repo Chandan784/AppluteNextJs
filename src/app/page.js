@@ -33,52 +33,51 @@ export default function HomePage() {
         },
       ];
 
-      // Dummy categories
       const dummyCategories = [
         {
           id: 1,
-          name: "Category 1",
-          description: "Description for Category 1",
+          name: "Web Development",
+          icon: "https://cdn-icons-png.flaticon.com/128/1087/1087815.png",
         },
         {
           id: 2,
-          name: "Category 2",
-          description: "Description for Category 2",
+          name: "Data Science",
+          icon: "https://cdn-icons-png.flaticon.com/128/1449/1449312.png",
         },
         {
           id: 3,
-          name: "Category 3",
-          description: "Description for Category 3",
+          name: "Graphic Design",
+          icon: "https://cdn-icons-png.flaticon.com/128/2779/2779775.png",
         },
         {
-          id: 1,
-          name: "Category 1",
-          description: "Description for Category 1",
+          id: 4,
+          name: "Digital Marketing",
+          icon: "https://cdn-icons-png.flaticon.com/128/1968/1968750.png",
         },
         {
-          id: 2,
-          name: "Category 2",
-          description: "Description for Category 2",
+          id: 5,
+          name: "Photography",
+          icon: "https://cdn-icons-png.flaticon.com/128/1042/1042339.png",
         },
         {
-          id: 3,
-          name: "Category 3",
-          description: "Description for Category 3",
+          id: 6,
+          name: "Business Management",
+          icon: "https://cdn-icons-png.flaticon.com/128/3094/3094829.png",
         },
         {
-          id: 1,
-          name: "Category 1",
-          description: "Description for Category 1",
+          id: 7,
+          name: "Mobile App Development",
+          icon: "https://cdn-icons-png.flaticon.com/128/1875/1875043.png",
         },
         {
-          id: 2,
-          name: "Category 2",
-          description: "Description for Category 2",
+          id: 8,
+          name: "Cyber Security",
+          icon: "https://cdn-icons-png.flaticon.com/128/4744/4744315.png",
         },
         {
-          id: 3,
-          name: "Category 3",
-          description: "Description for Category 3",
+          id: 9,
+          name: "Artificial Intelligence",
+          icon: "https://cdn-icons-png.flaticon.com/128/5278/5278402.png",
         },
       ];
 

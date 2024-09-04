@@ -5,6 +5,7 @@ import videojs from "video.js";
 import "video.js/dist/video-js.css";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaFilePdf, FaPlayCircle } from "react-icons/fa";
 
 export default function CoursePage({ params }) {
   const [course, setCourse] = useState(null);
@@ -256,13 +257,52 @@ export default function CoursePage({ params }) {
                 {activeTab === "notes" && (
                   <div>
                     <h2 className="text-xl font-bold mb-4">Notes</h2>
-                    <p className="text-gray-700">No notes available yet.</p>
+                    <ul className="space-y-4">
+                      {course.notes?.map((note, index) => (
+                        <li
+                          key={index}
+                          className="flex items-center justify-between"
+                        >
+                          <div className="flex items-center">
+                            <FaFilePdf className="text-red-600 mr-2" />
+                            <span>{note.notesTitle}</span>
+                          </div>
+                          <a
+                            href={note.notesLink}
+                            className="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition duration-300"
+                            download
+                          >
+                            Download
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 )}
                 {activeTab === "test" && (
                   <div>
                     <h2 className="text-xl font-bold mb-4">Test</h2>
-                    <p className="text-gray-700">No test available yet.</p>
+                    <ul className="space-y-4">
+                      {course.test?.map((testItem, index) => (
+                        <li
+                          key={index}
+                          className="flex items-center justify-between"
+                        >
+                          <div className="flex items-center">
+                            <FaPlayCircle className="text-blue-600 mr-2" />
+                            <span>{testItem.testTitle}</span>
+                          </div>
+                          <button
+                            onClick={() =>
+                              alert(`Start test: ${testItem.testLink}`)
+                            }
+                            className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition duration-300"
+                          >
+                            Start Test
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 )}
               </div>

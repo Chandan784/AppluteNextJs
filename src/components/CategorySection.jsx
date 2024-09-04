@@ -4,7 +4,7 @@ const CategorySection = ({ categories }) => {
   const scrollStyle = {
     overflowX: "auto",
     whiteSpace: "nowrap",
-    scrollbarWidth: "none" /* Firefox */,
+    scrollbarWidth: "none", // Firefox
   };
 
   return (
@@ -15,10 +15,16 @@ const CategorySection = ({ categories }) => {
           {categories.map((category) => (
             <div
               key={category.id}
-              className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 flex-shrink-0 w-64"
+              className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 flex-shrink-0 w-64 flex items-center"
             >
-              <h3 className="text-lg font-semibold mb-2">{category.name}</h3>
-              <p className="text-sm text-gray-600">{category.description}</p>
+              {/* Category Icon */}
+              <img
+                src={category.icon}
+                alt={`${category.name} icon`}
+                className="w-10 h-10 mr-4"
+              />
+              {/* Category Title */}
+              <h3 className="text-lg font-semibold">{category.name}</h3>
             </div>
           ))}
         </div>
