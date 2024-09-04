@@ -142,7 +142,7 @@ const Header = () => {
             My Courses
           </Link>
           <Link
-            href="/contact"
+            href="/contactus"
             className="hover:bg-gray-800 px-4 py-2 rounded transition-colors"
           >
             Contact Us
@@ -217,7 +217,7 @@ const Header = () => {
                 My Courses
               </Link>
               <Link
-                href="/contact"
+                href="/contactus"
                 className="block hover:bg-gray-700 px-4 py-2 rounded transition-colors"
               >
                 Contact Us

@@ -6,6 +6,7 @@ import "video.js/dist/video-js.css";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaFilePdf, FaPlayCircle } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 export default function CoursePage({ params }) {
   const [course, setCourse] = useState(null);
@@ -15,6 +16,7 @@ export default function CoursePage({ params }) {
   const [activeTab, setActiveTab] = useState("content"); // Default tab
   let courseid = params.id;
   let user = JSON.parse(localStorage.getItem("user"));
+  const router = useRouter();
 
   useEffect(() => {
     if (courseid) {
@@ -293,9 +295,7 @@ export default function CoursePage({ params }) {
                             <span>{testItem.testTitle}</span>
                           </div>
                           <button
-                            onClick={() =>
-                              alert(`Start test: ${testItem.testLink}`)
-                            }
+                            onClick={() => router.push(`/quizpage`)}
                             className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition duration-300"
                           >
                             Start Test
