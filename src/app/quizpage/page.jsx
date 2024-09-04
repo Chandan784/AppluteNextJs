@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-// Adjust path if necessary
-import QuizPlay from "./quizplay/page";
+import QuizPlay from "@/components/QuizPlay"; // Adjust path if necessary
+
 const mcqQuestions = [
   {
     id: 1,
