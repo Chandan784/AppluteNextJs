@@ -1,4 +1,3 @@
-// src/pages/api/auth/signup.js
 import mongoose from "mongoose";
 import dbConnect from "../../../../../lib/dbConnect";
 import User from "../../../../../model/User";
@@ -21,12 +20,18 @@ export async function POST(req) {
       );
     }
 
-    await dbConnect();
+    // Connect to the database
+    try {
+      await dbConnect();
+    } catch (err) {
+      return NextResponse.json(
+        { success: false, message: "Database connection error" },
+        { status: 500 }
+      );
+    }
 
     // Check if OTP is verified
-    const otpEntry = await Otp.findOne({ email });
-    console.log(otpEntry);
-
+    // const otpEntry = await Otp.findOne({ email });
     // if (!otpEntry || otpEntry.verified !== true) {
     //   return NextResponse.json(
     //     { success: false, message: "Email not verified" },
@@ -43,8 +48,8 @@ export async function POST(req) {
       );
     }
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Hash the password with a stronger salt round
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     // Create a new user
     const newUser = new User({
@@ -63,20 +68,23 @@ export async function POST(req) {
     const token = jwt.sign(
       { userId: newUser._id, email: newUser.email },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" } // Token expires in 1 hour
+      { expiresIn: "2h" } // Token expires in 2 hours
     );
+
+    // Exclude password before returning user data
+    const { password: _, ...userData } = newUser.toObject();
 
     const response = NextResponse.json({
       success: true,
       message: "User registered successfully",
-      newUser,
+      userData,
     });
 
     // Set the JWT as an HttpOnly cookie
     response.cookies.set("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60, // 1 hour
+      maxAge: 60 * 60 * 2, // 2 hours
       path: "/",
     });
 

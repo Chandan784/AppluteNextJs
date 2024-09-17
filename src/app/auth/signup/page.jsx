@@ -100,14 +100,18 @@ export default function SignUp() {
 
       const data = await res.json();
       if (res.ok) {
-        localStorage.setItem("uid");
+        console.log(data);
+
+        localStorage.setItem("uid", data.userData._id);
         toast.success("User registered successfully!");
         window.location.href = "/auth/login";
       } else {
         toast.error(data.message);
       }
     } catch (err) {
-      toast.error("Failed to sign up");
+      console.log(err.message);
+
+      toast.error(err.message);
     }
     setIsLoading(false);
   };

@@ -90,7 +90,7 @@ export default function HomePage() {
 
   return (
     <div className="container mx-auto ">
-      <CategorySection categories={categories} />
+      {/* <CategorySection categories={categories} /> */}
       <h2 className="text-2xl font-semibold mt-8 mb-4">Courses</h2>
       <CourseList courses={courses} />
     </div>

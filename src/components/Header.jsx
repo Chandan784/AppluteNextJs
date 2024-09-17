@@ -78,7 +78,7 @@ const Header = () => {
         </div>
 
         {/* Search Bar (Desktop) */}
-        <div className="relative hidden md:flex flex-grow max-w-md mx-auto">
+        {/* <div className="relative hidden md:flex flex-grow max-w-md mx-auto">
           <input
             type="text"
             value={searchTerm}
@@ -100,10 +100,10 @@ const Header = () => {
               <span className="material-icons">close</span>
             </button>
           )}
-        </div>
+        </div> */}
 
         {/* Search Bar (Mobile) */}
-        <div className="relative flex-grow md:hidden flex justify-center mx-4">
+        {/* <div className="relative flex-grow md:hidden flex justify-center mx-4">
           <input
             type="text"
             value={searchTerm}
@@ -125,7 +125,7 @@ const Header = () => {
               <span className="material-icons text-sm">close</span>
             </button>
           )}
-        </div>
+        </div> */}
 
         {/* Navbar Links (Desktop) */}
         <div className="hidden md:flex space-x-4 items-center">
