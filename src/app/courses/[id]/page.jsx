@@ -1,6 +1,6 @@
 "use client"; // Ensure this directive is at the top of the file
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
 import { toast, ToastContainer } from "react-toastify";
@@ -11,25 +11,51 @@ import { useRouter } from "next/navigation";
 export default function CoursePage({ params }) {
   const [course, setCourse] = useState(null);
   const [playingUrl, setPlayingUrl] = useState("");
-  const [player, setPlayer] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
   const [activeTab, setActiveTab] = useState("content"); // Default tab
-  let courseid = params.id;
-  let user = JSON.parse(localStorage.getItem("user"));
+  const courseid = params.id;
+  const user = JSON.parse(localStorage.getItem("user"));
   const router = useRouter();
+  const videoRef = useRef(null); // Ref for video element
+  const playerRef = useRef(null); // Ref for video.js player instance
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      // Check subscription status
+      const checkSubscription = async () => {
+        try {
+          const response = await fetch(`/api/users/${user._id}`);
+          const data = await response.json();
+          setIsSubscribed(data.isSubscribed); // Set subscription status
+        } catch (error) {
+          console.error("Error checking subscription status:", error);
+        }
+      };
+      checkSubscription();
+    }
+  }, []);
 
   useEffect(() => {
     if (courseid) {
       const fetchCourse = async () => {
-        const response = await fetch(`/api/courses/${courseid}`);
-        if (response.ok) {
-          const data = await response.json();
-          setCourse(data);
-          if (data.content.length > 0) {
-            setPlayingUrl(data.content[0].topicUrl);
+        setIsLoading(true);
+        try {
+          const response = await fetch(`/api/courses/${courseid}`);
+          if (response.ok) {
+            const data = await response.json();
+            setCourse(data);
+            if (data.content.length > 0) {
+              setPlayingUrl(data.content[0].topicUrl);
+            }
+          } else {
+            console.error("Failed to fetch course");
           }
-        } else {
-          console.error("Failed to fetch course");
+        } catch (error) {
+          console.error("Error fetching course:", error);
+        } finally {
+          setIsLoading(false);
         }
       };
 
@@ -38,10 +64,10 @@ export default function CoursePage({ params }) {
   }, [courseid]);
 
   useEffect(() => {
-    const videoElement = document.getElementById("video-player");
-
-    if (videoElement) {
-      const playerInstance = videojs(videoElement, {
+    // Initialize video.js player
+    const videoElement = videoRef.current;
+    if (videoElement && !playerRef.current) {
+      playerRef.current = videojs(videoElement, {
         controls: true,
         autoplay: false,
         preload: "auto",
@@ -50,141 +76,71 @@ export default function CoursePage({ params }) {
         responsive: true,
       });
 
-      setPlayer(playerInstance);
-
       return () => {
-        if (playerInstance) {
-          playerInstance.dispose();
+        if (playerRef.current) {
+          playerRef.current.dispose();
         }
       };
     }
-  }, [playingUrl]);
+  }, []);
 
   useEffect(() => {
-    if (player && playingUrl) {
+    //Update player when playingUrl changes
+    console.log("playingRef", playerRef.current);
+
+    if (playerRef.current && playingUrl) {
+      const player = playerRef.current;
       player.src({ src: playingUrl, type: "video/mp4" });
+      player.load(); // Load the new video source
       player.play().catch((error) => {
         console.error("Error playing video:", error);
       });
     }
-  }, [playingUrl, player]);
+  }, [playingUrl]);
 
-  const handleBuyNow = async () => {
-    if (user == null) {
-      toast.success("First login");
-    } else {
-      setIsLoading(true);
-      try {
-        const res = await fetch("/api/payment/createOrder", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ amount: course.price * 100 }), // Amount in the smallest currency unit
-        });
-        const { id, currency, amount } = await res.json();
+  const handlePlay = (url) => {
+    const videoElement = videoRef.current;
+    if (videoElement && !playerRef.current) {
+      playerRef.current = videojs(videoElement, {
+        controls: true,
+        autoplay: false,
+        preload: "auto",
+        playbackRates: [0.5, 1, 1.5, 2],
+        fluid: true,
+        responsive: true,
+      });
 
-        const scriptLoaded = await loadRazorpayScript();
-        if (!scriptLoaded) {
-          toast.error("Failed to load payment script.");
-          setIsLoading(false);
-          return;
+      return () => {
+        if (playerRef.current) {
+          playerRef.current.dispose();
         }
-
-        const options = {
-          key: "rzp_live_0hcX6BTQ9RtC5P",
-          amount,
-          currency,
-          name: "Your App Name",
-          description: "Course Purchase",
-          order_id: id,
-          handler: async function (response) {
-            const {
-              razorpay_payment_id,
-              razorpay_order_id,
-              razorpay_signature,
-            } = response;
-
-            const verificationRes = await fetch("/api/payment/verifyPayment", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                paymentId: razorpay_payment_id,
-                orderId: razorpay_order_id,
-                signature: razorpay_signature,
-              }),
-            });
-            const data = await verificationRes.json();
-            if (data.success) {
-              toast.success("Payment successful!");
-
-              console.log(user, "user");
-
-              // Call the API to update purchased courses
-              const updateRes = await fetch(
-                "/api/courses/updatePurchasedCourses",
-                {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    userId: user._id,
-                    courseId: courseid,
-                  }),
-                }
-              );
-
-              const updateData = await updateRes.json();
-              if (updateData.success) {
-                toast.success("Course added to your account!");
-                // Redirect or update UI here
-                // Example: window.location.href = "/my-courses";
-              } else {
-                toast.error("Failed to add course to your account.");
-              }
-            } else {
-              toast.error("Payment verification failed!");
-            }
-          },
-          prefill: {
-            name: "User Name",
-            email: "user@example.com",
-            contact: "1234567890",
-          },
-          notes: {
-            address: "User Address",
-          },
-          theme: {
-            color: "#3399cc",
-          },
-        };
-
-        const paymentObject = new window.Razorpay(options);
-        paymentObject.open();
-      } catch (error) {
-        console.error("Error during payment:", error);
-        toast.error("An error occurred during the payment process.");
+      };
+    }
+    if (!user) {
+      toast.error("Please log in to access the video.");
+      router.push("/auth/login");
+    } else {
+      if (!course.isPaid || isSubscribed) {
+        // Play the video if the course is free or the user is subscribed
+        setPlayingUrl(url);
+      } else {
+        // Redirect to the subscription page if the course is paid and the user is not subscribed
+        router.push(`/subscription`);
       }
-      setIsLoading(false);
     }
   };
 
-  const loadRazorpayScript = () => {
-    return new Promise((resolve) => {
-      const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
-      document.body.appendChild(script);
-    });
-  };
-
-  if (!course) return <p>Loading...</p>;
+  if (isLoading) return <p>Loading...</p>;
+  if (!course) return <p>Course not found</p>;
 
   return (
     <div className="container mx-auto p-4 lg:px-72">
       <ToastContainer />
       <div className="flex flex-col bg-white shadow-md rounded-lg overflow-hidden">
-        <div className="w-full relative aspect-w-16 aspect-h-9 bg-gray-200">
+        <div className="w-full relative bg-gray-200">
           <div data-vjs-player>
             <video
+              ref={videoRef}
               id="video-player"
               className="video-js vjs-default-skin w-full h-full"
               controls
@@ -236,7 +192,7 @@ export default function CoursePage({ params }) {
                   Test
                 </li>
               </ul>
-              <div className="">
+              <div>
                 {activeTab === "content" && (
                   <div>
                     <h2 className="text-xl font-bold mb-4">Course Content</h2>
@@ -245,10 +201,13 @@ export default function CoursePage({ params }) {
                         <li
                           key={index}
                           className="flex items-center justify-between cursor-pointer"
-                          onClick={() => setPlayingUrl(item.topicUrl)}
+                          onClick={() => handlePlay(item.topicUrl)}
                         >
                           <span>{item.topicTitle}</span>
-                          <button className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition duration-300">
+                          <button
+                            className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition duration-300"
+                            onClick={() => handlePlay(item.topicUrl)}
+                          >
                             Play
                           </button>
                         </li>
@@ -311,23 +270,12 @@ export default function CoursePage({ params }) {
         </div>
 
         {/* Fixed Bottom Section */}
-        <div className="fixed bottom-0 left-0 w-full bg-white shadow-lg border-t border-gray-200 flex items-center justify-between p-4 lg:px-72 lg:py-4">
-          <div className="flex-1 flex flex-col items-start">
-            <p className="text-xl font-bold text-green-600 mb-1">
-              ₹{course.price}
-            </p>
-            <p className="text-sm text-gray-500 line-through ml-1">
-              ₹{"10,000"}
-            </p>
-          </div>
-          <button
-            onClick={handleBuyNow}
-            className="bg-blue-600 text-white font-semibold py-3 px-6 rounded-full hover:bg-blue-700 transition duration-300"
-            disabled={isLoading}
-          >
-            {isLoading ? "Processing..." : "Buy Now"}
-          </button>
-        </div>
+        {/* <div className="fixed bottom-0 left-0 w-full bg-white shadow-lg border-t border-gray-200 flex items-center justify-between p-4 lg:px-72 lg:py-4">
+          <span className="text-gray-600">
+            Duration: {course.duration} hours
+          </span>
+          <span className="text-gray-600">Price: ${course.price}</span>
+        </div> */}
       </div>
     </div>
   );

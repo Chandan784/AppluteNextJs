@@ -199,7 +199,7 @@ export default function SignUp() {
               {isLoading ? (
                 <CircularProgress size={24} className="text-white" />
               ) : (
-                "Send OTP"
+                "Verify Email"
               )}
             </button>
           </div>

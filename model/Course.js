@@ -51,20 +51,25 @@ const courseSchema = new mongoose.Schema({
         type: String,
         required: true,
       },
-      createdBy: {
-        type: String,
-        required: true,
-      },
-      language: {
-        type: String,
-        required: true,
-      },
-      category: {
-        type: String,
-        required: true,
-      },
     },
   ],
+  createdBy: {
+    type: String,
+    required: true,
+  },
+  language: {
+    type: String,
+    required: true,
+  },
+  category: {
+    type: String,
+    required: true,
+  },
+  isPaid: {
+    // Added field to indicate if the course is paid
+    type: Boolean,
+    default: true, // Default value to true assuming courses are paid by default
+  },
 });
 
 const Course = mongoose.models.Course || mongoose.model("Course", courseSchema);
