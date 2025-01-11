@@ -1,3 +1,5 @@
+"use client";
+
 import TrainingCard from "@/components/TrainingCard";
 import React from "react";
 
