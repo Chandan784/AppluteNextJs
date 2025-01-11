@@ -127,7 +127,7 @@ const Subscription = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
         {/* 1 Month Plan - Starter */}
-        <div className="bg-white rounded-lg shadow-lg p-6 md:p-8 max-w-full md:max-w-sm text-center border-2 border-blue-500 relative h-full flex flex-col justify-between transform transition-transform hover:scale-105 hover:shadow-2xl">
+        <div className="bg-white rounded-lg shadow-lg p-2 md:p-8 max-w-full md:max-w-sm text-center border-2 border-blue-500 relative h-full flex flex-col justify-between transform transition-transform hover:scale-105 hover:shadow-2xl">
           <div className="absolute top-0 right-0 bg-yellow-400 text-white py-1 px-3 rounded-full text-sm">
             Starter
           </div>
@@ -153,7 +153,7 @@ const Subscription = () => {
         </div>
 
         {/* 6 Months Plan - Most Popular */}
-        <div className="bg-white rounded-lg shadow-lg p-6 md:p-8 max-w-full md:max-w-sm text-center relative h-full flex flex-col justify-between border-2 border-green-500 transform transition-transform hover:scale-105 hover:shadow-2xl">
+        <div className="bg-white rounded-lg shadow-lg p-2 md:p-8 max-w-full md:max-w-sm text-center relative h-full flex flex-col justify-between border-2 border-green-500 transform transition-transform hover:scale-105 hover:shadow-2xl">
           <h2 className="text-xl md:text-2xl font-semibold mb-4">
             6 Months Plan
           </h2>
@@ -178,7 +178,7 @@ const Subscription = () => {
         </div>
 
         {/* 1 Year Plan - Long Term */}
-        <div className="bg-white rounded-lg shadow-lg p-6 md:p-8 max-w-full md:max-w-sm text-center border-2 border-blue-500 relative h-full flex flex-col justify-between transform transition-transform hover:scale-105 hover:shadow-2xl">
+        <div className="bg-white rounded-lg shadow-lg p-2 md:p-8 max-w-full md:max-w-sm text-center border-2 border-blue-500 relative h-full flex flex-col justify-between transform transition-transform hover:scale-105 hover:shadow-2xl">
           <div className="absolute top-0 right-0 bg-purple-500 text-white py-1 px-3 rounded-full text-sm">
             Long Term
           </div>

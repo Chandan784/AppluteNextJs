@@ -15,8 +15,18 @@ export async function GET() {
 
 // POST a new course
 export async function POST(request) {
-  const { title, description, price, thumbnail, content } =
-    await request.json();
+  const {
+    title,
+    description,
+    price,
+    thumbnail,
+    content,
+    test,
+    notes,
+    category,
+    createdBy,
+    language,
+  } = await request.json();
 
   try {
     await dbConnect();
@@ -28,6 +38,11 @@ export async function POST(request) {
       price,
       thumbnail,
       content,
+      test,
+      notes,
+      category,
+      createdBy,
+      language,
     });
 
     // Save the course to the database
