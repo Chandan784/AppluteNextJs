@@ -1,7 +1,10 @@
-// Import necessary Firebase SDKs
+// firebase.js
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth"; // Import Firebase Authentication
-import { RecaptchaVerifier } from "firebase/auth"; // Import reCAPTCHA verifier
+import {
+  getAuth,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+} from "firebase/auth";
 
 // Your Firebase project configuration
 const firebaseConfig = {
@@ -16,34 +19,6 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-
-// Initialize Firebase Authentication
 const auth = getAuth(app);
 
-// Function to set up reCAPTCHA for phone authentication
-const setupRecaptcha = () => {
-  if (window.recaptchaVerifier) {
-    return; // If reCAPTCHA is already initialized, no need to reinitialize
-  }
-
-  // Initialize reCAPTCHA verifier
-  window.recaptchaVerifier = new RecaptchaVerifier(
-    "recaptcha-container", // ID of the container element
-    {
-      size: "invisible", // Use invisible reCAPTCHA
-      callback: (response) => {
-        console.log("reCAPTCHA verified:", response);
-      },
-      "expired-callback": () => {
-        console.log("reCAPTCHA expired. Please try again.");
-      },
-    },
-    auth // Pass the initialized Firebase auth instance
-  );
-
-  // Disable reCAPTCHA for testing purposes (only in development)
-  window.recaptchaVerifier.appVerificationDisabledForTesting = true;
-};
-
-// Export the Firebase auth instance and setupRecaptcha function
-export { auth, setupRecaptcha };
+export { auth, RecaptchaVerifier, signInWithPhoneNumber };

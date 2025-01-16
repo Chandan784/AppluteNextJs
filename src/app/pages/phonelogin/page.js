@@ -1,97 +1,108 @@
 "use client";
 
 import { useState } from "react";
-import { auth, setupRecaptcha } from "@/app/firebase"; // Import Firebase auth and reCAPTCHA setup
-import { signInWithPhoneNumber } from "firebase/auth";
+import { auth, RecaptchaVerifier, signInWithPhoneNumber } from "@/app/firebase";
 
-const OTPLogin = () => {
-  const [phone, setPhone] = useState("");
+export default function PhoneLogin() {
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [otp, setOtp] = useState("");
-  const [confirmationResult, setConfirmationResult] = useState(null);
+  const [verificationId, setVerificationId] = useState("");
   const [message, setMessage] = useState("");
 
-  // Function to send OTP to the provided phone number
-  const sendOtp = async () => {
-    setupRecaptcha(); // Initialize reCAPTCHA
-    const appVerifier = window.recaptchaVerifier; // Get reCAPTCHA verifier instance
+  // Setup Recaptcha
+  const setupRecaptcha = () => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        "recaptcha-container",
+        {
+          size: "invisible", // Use "invisible" for seamless experience
+          callback: (response) => {
+            console.log("ReCAPTCHA verified:", response);
+          },
+          "expired-callback": () => {
+            console.warn("ReCAPTCHA expired. Please try again.");
+          },
+        },
+        auth
+      );
+    }
+  };
+
+  // Handle Sending OTP
+  const handleSendOTP = async () => {
+    if (!phoneNumber || !/^\+\d{10,15}$/.test(phoneNumber)) {
+      setMessage("Please enter a valid phone number with the country code.");
+      return;
+    }
+
     try {
-      const result = await signInWithPhoneNumber(auth, phone, appVerifier);
-      setConfirmationResult(result);
-      setMessage("OTP sent! Please check your phone.");
+      setupRecaptcha();
+      const appVerifier = window.recaptchaVerifier;
+
+      const confirmationResult = await signInWithPhoneNumber(
+        auth,
+        phoneNumber,
+        appVerifier
+      );
+      setVerificationId(confirmationResult.verificationId);
+      setMessage("OTP sent to your phone number.");
     } catch (error) {
+      console.error("Error sending OTP:", error);
       setMessage(`Error sending OTP: ${error.message}`);
     }
   };
 
-  // Function to verify OTP entered by the user
-  const verifyOtp = async () => {
-    if (!confirmationResult) {
-      setMessage("Please request an OTP first.");
+  // Handle Verifying OTP
+  const handleVerifyOTP = async () => {
+    if (!otp || otp.length < 6) {
+      setMessage("Please enter the OTP.");
       return;
     }
+
     try {
-      const userCredential = await confirmationResult.confirm(otp);
+      const credential = auth.PhoneAuthProvider.credential(verificationId, otp);
+      const userCredential = await auth.signInWithCredential(credential);
+
       setMessage(
-        `Logged in successfully as ${userCredential.user.phoneNumber}`
+        `Phone number verified successfully! Welcome, ${userCredential.user.phoneNumber}.`
       );
     } catch (error) {
-      setMessage(`Error verifying OTP: ${error.message}`);
+      console.error("Error verifying OTP:", error);
+      setMessage(`Invalid OTP. Please try again: ${error.message}`);
     }
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Login with OTP</h1>
+    <div>
+      <h1>Firebase Phone Authentication</h1>
+
+      {/* Phone Number Input */}
       <div>
-        <label htmlFor="phone" className="block font-medium">
-          Phone Number
-        </label>
         <input
           type="text"
-          id="phone"
-          placeholder="+1 123 456 7890"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="border p-2 rounded w-full mb-4"
+          placeholder="Enter phone number (+1XXXXXXXXXX)"
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
         />
-        <button
-          onClick={sendOtp}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          Send OTP
-        </button>
+        <button onClick={handleSendOTP}>Send OTP</button>
       </div>
 
-      {/* OTP Verification */}
-      {confirmationResult && (
-        <div className="mt-4">
-          <label htmlFor="otp" className="block font-medium">
-            Enter OTP
-          </label>
-          <input
-            type="text"
-            id="otp"
-            placeholder="123456"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            className="border p-2 rounded w-full mb-4"
-          />
-          <button
-            onClick={verifyOtp}
-            className="bg-green-600 text-white px-4 py-2 rounded"
-          >
-            Verify OTP
-          </button>
-        </div>
-      )}
+      {/* OTP Input */}
+      <div>
+        <input
+          type="text"
+          placeholder="Enter OTP"
+          value={otp}
+          onChange={(e) => setOtp(e.target.value)}
+        />
+        <button onClick={handleVerifyOTP}>Verify OTP</button>
+      </div>
 
-      {/* reCAPTCHA container */}
+      {/* Recaptcha Container */}
       <div id="recaptcha-container"></div>
 
-      {/* Display message */}
-      {message && <p className="mt-4 text-red-600">{message}</p>}
+      {/* Message Display */}
+      <p>{message}</p>
     </div>
   );
-};
-
-export default OTPLogin;
+}
