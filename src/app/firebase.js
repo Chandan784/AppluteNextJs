@@ -1,9 +1,10 @@
-// firebase.js
+// Import necessary Firebase SDKs
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
-  RecaptchaVerifier,
-  signInWithPhoneNumber,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
 } from "firebase/auth";
 
 // Your Firebase project configuration
@@ -20,5 +21,6 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
 
-export { auth, RecaptchaVerifier, signInWithPhoneNumber };
+export { auth, googleProvider, signInWithPopup, signOut };
