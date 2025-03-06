@@ -1,204 +1,319 @@
 "use client";
+import React, { useState, useEffect } from "react";
+import "./globals.css";
+import Head from "next/head";
+import AOS from "aos";
+import "aos/dist/aos.css";
+import {
+  FiMenu,
+  FiX,
+  FiCode,
+  FiGlobe,
+  FiTrendingUp,
+  FiBox,
+  FiBookOpen,
+  FiUsers,
+  FiTool,
+  FiInfo,
+  FiMail,
+} from "react-icons/fi";
 
-import { useState } from "react";
+function Page() {
+  const [menuOpen, setMenuOpen] = useState(false);
 
-export default function BookingPage() {
-  const [name, setName] = useState("");
-  const [age, setAge] = useState("");
-  const [state, setState] = useState("");
-  const [academicBackground, setAcademicBackground] = useState("");
-  const [course, setCourse] = useState("");
+  useEffect(() => {
+    AOS.init({ duration: 1000, once: true });
+  }, []);
 
-  const statesOfIndia = [
-    "Andhra Pradesh",
-    "Arunachal Pradesh",
-    "Assam",
-    "Bihar",
-    "Chhattisgarh",
-    "Goa",
-    "Gujarat",
-    "Haryana",
-    "Himachal Pradesh",
-    "Jharkhand",
-    "Karnataka",
-    "Kerala",
-    "Madhya Pradesh",
-    "Maharashtra",
-    "Manipur",
-    "Meghalaya",
-    "Mizoram",
-    "Nagaland",
-    "Odisha",
-    "Punjab",
-    "Rajasthan",
-    "Sikkim",
-    "Tamil Nadu",
-    "Telangana",
-    "Tripura",
-    "Uttar Pradesh",
-    "Uttarakhand",
-    "West Bengal",
-  ];
-
-  const academicOptions = {
-    Schooling: [
-      "Class 1",
-      "Class 2",
-      "Class 3",
-      "Class 4",
-      "Class 5",
-      "Class 6",
-      "Class 7",
-      "Class 8",
-      "Class 9",
-      "Class 10",
-      "Class 11",
-      "Class 12",
-    ],
-    Undergraduate: ["B.Sc", "B.Com", "B.A", "B.Tech", "BBA", "LLB", "MBBS"],
-    Postgraduate: ["M.Sc", "M.Com", "M.A", "M.Tech", "MBA", "LLM", "MD"],
-    Doctorate: ["PhD", "Post-Doctoral Research"],
-    "Professional Courses": ["CA", "CS", "CFA", "ACCA", "CMA"],
-  };
-
-  const courseOptions = {
-    Technology: [
-      "Web Development",
-      "Data Science",
-      "Machine Learning",
-      "Cybersecurity",
-      "Cloud Computing",
-      "AI & Robotics",
-    ],
-    Design: [
-      "Graphic Design",
-      "UI/UX Design",
-      "Animation",
-      "Interior Design",
-      "Fashion Design",
-    ],
-    Marketing: [
-      "Digital Marketing",
-      "SEO",
-      "Content Marketing",
-      "Social Media Marketing",
-      "Brand Management",
-    ],
-    Finance: [
-      "Investment Banking",
-      "Stock Market",
-      "Financial Planning",
-      "Crypto Trading",
-      "Taxation & Auditing",
-    ],
-    Medical: [
-      "First Aid",
-      "Medical Coding",
-      "Pharmacology",
-      "Healthcare Management",
-      "Clinical Research",
-    ],
-    Languages: [
-      "English",
-      "French",
-      "German",
-      "Japanese",
-      "Chinese",
-      "Spanish",
-    ],
-    "Other Skills": [
-      "Photography",
-      "Music Production",
-      "Cooking",
-      "Fitness Training",
-      "Public Speaking",
-      "Entrepreneurship",
-    ],
-  };
-
-  const handleBooking = () => {
-    if (!name || !age || !state || !academicBackground || !course) return;
-    const message = `Hello, my name is ${name}. I am ${age} years old from ${state}. I have a background in ${academicBackground} and I am interested in learning '${course}'. Please provide more details.`;
-    const whatsappURL = `https://wa.me/6370302039?text=${encodeURIComponent(
-      message
-    )}`;
-    window.open(whatsappURL, "_blank");
-  };
+  const toggleMenu = () => setMenuOpen(!menuOpen);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      <div className="bg-white shadow-lg rounded-2xl p-6 max-w-md w-full">
-        <h1 className="text-2xl font-bold mb-4 text-center">
-          Book Live Training
-        </h1>
-        <p className="text-gray-600 mb-4 text-center">
-          Fill in your details and message us directly on WhatsApp.
-        </p>
-        <input
-          type="text"
-          placeholder="Enter your name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded mb-4"
+    <div className="font-sans bg-black text-white">
+      <Head>
+        <title>Applute - Software Company</title>
+        <meta
+          name="description"
+          content="Innovative solutions for app development, web development, digital marketing, and more."
         />
-        <input
-          type="number"
-          placeholder="Enter your age"
-          value={age}
-          onChange={(e) => setAge(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded mb-4"
+        <link rel="icon" href="/favicon.ico" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
         />
-        <select
-          value={state}
-          onChange={(e) => setState(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded mb-4"
-        >
-          <option value="">Select State</option>
-          {statesOfIndia.map((state, index) => (
-            <option key={index} value={state}>
-              {state}
-            </option>
-          ))}
-        </select>
-        <select
-          value={academicBackground}
-          onChange={(e) => setAcademicBackground(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded mb-4"
-        >
-          <option value="">Select Academic Background</option>
-          {Object.keys(academicOptions).map((category, index) => (
-            <optgroup key={index} label={category}>
-              {academicOptions[category].map((option, idx) => (
-                <option key={idx} value={option}>
-                  {option}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
-        <select
-          value={course}
-          onChange={(e) => setCourse(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded mb-4"
-        >
-          <option value="">Select Course</option>
-          {Object.keys(courseOptions).map((category, index) => (
-            <optgroup key={index} label={category}>
-              {courseOptions[category].map((option, idx) => (
-                <option key={idx} value={option}>
-                  {option}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
-        <button
-          onClick={handleBooking}
-          className="w-full bg-green-500 hover:bg-green-600 text-white p-2 rounded"
-        >
-          Send Message on WhatsApp
-        </button>
-      </div>
+      </Head>
+
+      {/* Navbar */}
+      <nav className="fixed top-0 w-full bg-gray-900 shadow-md z-50">
+        <div className="container mx-auto flex justify-between items-center p-6">
+          <div className="text-2xl font-bold text-white">Applute</div>
+          <div className="md:hidden">
+            <button onClick={toggleMenu} className="text-white">
+              {menuOpen ? <FiX size={28} /> : <FiMenu size={28} />}
+            </button>
+          </div>
+          <ul
+            className={`md:flex space-x-8 ${
+              menuOpen ? "block" : "hidden"
+            } md:block absolute md:static top-16 left-0 w-full md:w-auto bg-gray-900 md:bg-transparent p-4 md:p-0`}
+          >
+            {[
+              "Home",
+              "Services",
+              "Portfolio",
+              "Clients",
+              "Team",
+              "Technology",
+              "About",
+              "Contact",
+            ].map((item) => (
+              <li key={item} className="mb-4 md:mb-0">
+                <a
+                  href={`#${item.toLowerCase()}`}
+                  className="text-gray-300 hover:text-blue-500 transition duration-300"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {item}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section
+        id="hero"
+        className="flex items-center justify-center h-screen bg-gray-900 relative overflow-hidden"
+      >
+        <div className="text-center z-10" data-aos="fade-up">
+          <h1 className="text-6xl font-bold mb-6">Welcome to Applute</h1>
+          <p className="text-xl mb-8">
+            Innovative Solutions for Your Digital Needs
+          </p>
+          <button className="bg-blue-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-blue-500 transition duration-300">
+            Get Started
+          </button>
+        </div>
+        <div className="absolute inset-0 bg-black opacity-50"></div>
+      </section>
+
+      {/* Services Section */}
+      <section id="services" className="py-20 bg-gray-800 text-center">
+        <div className="container mx-auto">
+          <h2 className="text-4xl font-bold mb-12" data-aos="fade-up">
+            Our Services
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: <FiCode size={48} />,
+                title: "App Development",
+                description:
+                  "We build cutting-edge mobile applications for iOS and Android.",
+              },
+              {
+                icon: <FiGlobe size={48} />,
+                title: "Web Development",
+                description: "Modern, responsive, and scalable web solutions.",
+              },
+              {
+                icon: <FiTrendingUp size={48} />,
+                title: "Digital Marketing",
+                description:
+                  "Boost your online presence with our marketing strategies.",
+              },
+              {
+                icon: <FiBox size={48} />,
+                title: "Product Development",
+                description: "From idea to product, we handle it all.",
+              },
+              {
+                icon: <FiBookOpen size={48} />,
+                title: "Software Training",
+                description:
+                  "Learn the latest technologies with our expert trainers.",
+              },
+              {
+                icon: <FiUsers size={48} />,
+                title: "Internship",
+                description:
+                  "Gain real-world experience with our internship programs.",
+              },
+            ].map((service, index) => (
+              <div
+                key={index}
+                className="p-8 bg-gray-700 rounded-lg shadow-lg hover:shadow-xl transition duration-300"
+                data-aos="fade-up"
+              >
+                <div className="text-blue-500 mb-4">{service.icon}</div>
+                <h3 className="text-2xl font-semibold mb-4">{service.title}</h3>
+                <p className="text-gray-300">{service.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Portfolio Section */}
+      <section id="portfolio" className="py-20 bg-gray-900 text-center">
+        <div className="container mx-auto">
+          <h2 className="text-4xl font-bold mb-12" data-aos="fade-up">
+            Our Portfolio
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                title: "E-Commerce Platform",
+                description:
+                  "A scalable e-commerce solution for global brands.",
+              },
+              {
+                title: "Healthcare App",
+                description:
+                  "A mobile app for patient management and telemedicine.",
+              },
+              {
+                title: "Fintech Dashboard",
+                description: "A real-time financial analytics dashboard.",
+              },
+            ].map((project, index) => (
+              <div
+                key={index}
+                className="p-8 bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition duration-300"
+                data-aos="fade-up"
+              >
+                <h3 className="text-2xl font-semibold mb-4">{project.title}</h3>
+                <p className="text-gray-300">{project.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Clients Section */}
+      <section id="clients" className="py-20 bg-gray-800 text-center">
+        <div className="container mx-auto">
+          <h2 className="text-4xl font-bold mb-12" data-aos="fade-up">
+            Our Clients
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {["Client 1", "Client 2", "Client 3", "Client 4"].map(
+              (client, index) => (
+                <div
+                  key={index}
+                  className="p-8 bg-gray-700 rounded-lg shadow-lg hover:shadow-xl transition duration-300"
+                  data-aos="fade-up"
+                >
+                  <h3 className="text-2xl font-semibold mb-4">{client}</h3>
+                  <p className="text-gray-300">
+                    Trusted partner for digital transformation.
+                  </p>
+                </div>
+              )
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Team Section */}
+      <section id="team" className="py-20 bg-gray-900 text-center">
+        <div className="container mx-auto">
+          <h2 className="text-4xl font-bold mb-12" data-aos="fade-up">
+            Our Team
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { name: "John Doe", role: "CEO" },
+              { name: "Jane Smith", role: "CTO" },
+              { name: "Alice Johnson", role: "Lead Developer" },
+            ].map((member, index) => (
+              <div
+                key={index}
+                className="p-8 bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition duration-300"
+                data-aos="fade-up"
+              >
+                <h3 className="text-2xl font-semibold mb-4">{member.name}</h3>
+                <p className="text-gray-300">{member.role}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Technology Section */}
+      <section id="technology" className="py-20 bg-gray-800 text-center">
+        <div className="container mx-auto">
+          <h2 className="text-4xl font-bold mb-12" data-aos="fade-up">
+            Our Technology Stack
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {["React", "Node.js", "Python", "AWS"].map((tech, index) => (
+              <div
+                key={index}
+                className="p-8 bg-gray-700 rounded-lg shadow-lg hover:shadow-xl transition duration-300"
+                data-aos="fade-up"
+              >
+                <h3 className="text-2xl font-semibold mb-4">{tech}</h3>
+                <p className="text-gray-300">
+                  Cutting-edge technology for modern solutions.
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section id="about" className="py-20 bg-gray-900 text-center">
+        <div className="container mx-auto">
+          <h2 className="text-4xl font-bold mb-12" data-aos="fade-up">
+            About Us
+          </h2>
+          <p className="text-gray-300 max-w-2xl mx-auto" data-aos="fade-up">
+            Applute is a leading software company specializing in app
+            development, web development, digital marketing, and more. We are
+            committed to delivering innovative solutions that drive business
+            growth.
+          </p>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer id="footer" className="py-10 bg-gray-800 text-gray-300">
+        <div className="container mx-auto text-center">
+          <h3 className="text-2xl font-bold mb-6" data-aos="fade-up">
+            Contact Us
+          </h3>
+          <p className="mb-2" data-aos="fade-up">
+            Email: info@applute.com
+          </p>
+          <p className="mb-6" data-aos="fade-up">
+            Phone: +1 234 567 890
+          </p>
+          <div className="flex justify-center space-x-6" data-aos="fade-up">
+            <a
+              href="https://facebook.com/applute"
+              className="hover:text-blue-500 transition duration-300"
+            >
+              Facebook
+            </a>
+            <a
+              href="https://twitter.com/applute"
+              className="hover:text-blue-500 transition duration-300"
+            >
+              Twitter
+            </a>
+            <a
+              href="https://linkedin.com/company/applute"
+              className="hover:text-blue-500 transition duration-300"
+            >
+              LinkedIn
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
+
+export default Page;
