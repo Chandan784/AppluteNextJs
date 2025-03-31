@@ -279,7 +279,8 @@ function Page() {
       </section>
 
       {/* Clients Section */}
-      <section id="clients" className="py-20 bg-gray-800">
+      {/* Clients Section */}
+      <section id="clients" className="py-20 bg-gray-800 overflow-hidden">
         <div className="container mx-auto px-4">
           <h2
             className="text-4xl font-bold mb-12 text-center"
@@ -288,25 +289,38 @@ function Page() {
             Our Esteemed Clients
           </h2>
 
-          {/* Horizontal scroll container for mobile */}
-          <div className="md:hidden relative">
-            <div className="flex overflow-x-auto pb-6 scrollbar-hide space-x-4 px-2">
-              {clientsData.map((client, index) => (
-                <ClientCard key={index} client={client} index={index} />
-              ))}
+          {/* Auto-scrolling container */}
+          <div className="relative">
+            {/* Desktop - Continuous scroll */}
+            <div className="hidden md:block overflow-hidden">
+              <div className="flex animate-[scroll_30s_linear_infinite] hover:animate-[scroll_30s_linear_infinite_paused]">
+                {[...clientsData, ...clientsData].map((client, index) => (
+                  <div
+                    key={`${index}-${client.name}`}
+                    className="px-4 min-w-[33.333%]"
+                  >
+                    <ClientCard
+                      client={client}
+                      index={index % clientsData.length}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-gray-800 to-transparent pointer-events-none"></div>
-          </div>
 
-          {/* Grid layout for desktop */}
-          <div className="hidden md:grid grid-cols-3 gap-6">
-            {clientsData.map((client, index) => (
-              <ClientCard key={index} client={client} index={index} />
-            ))}
+            {/* Mobile - Horizontal scroll with gradient edges */}
+            <div className="md:hidden relative">
+              <div className="flex overflow-x-auto pb-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] space-x-4 px-2">
+                {clientsData.map((client, index) => (
+                  <ClientCard key={index} client={client} index={index} />
+                ))}
+              </div>
+              <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-gray-800 to-transparent pointer-events-none"></div>
+              <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-gray-800 to-transparent pointer-events-none"></div>
+            </div>
           </div>
         </div>
       </section>
-
       {/* Team Section */}
       <section id="team" className="py-20 bg-gray-900 text-center">
         <div className="container mx-auto">
