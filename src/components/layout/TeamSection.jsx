@@ -5,21 +5,17 @@ import {
   FiCode,
   FiAward,
   FiCalendar,
-  FiFastForward,
-  FiPause,
-  FiPlay,
+  FiChevronLeft,
+  FiChevronRight,
 } from "react-icons/fi";
 
 const TeamSection = () => {
   const containerRef = useRef(null);
-  const [isPaused, setIsPaused] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [scrollSpeed, setScrollSpeed] = useState(10); // Increased default speed
   const startX = useRef(0);
   const scrollLeft = useRef(0);
-  const animationRef = useRef(null);
-  const touchStartX = useRef(0);
-  const lastScrollTime = useRef(0);
 
   const teamData = [
     {
@@ -54,101 +50,56 @@ const TeamSection = () => {
     },
   ];
 
-  // Double the team data for seamless looping
-  const duplicatedTeamData = [...teamData, ...teamData];
-
-  // Auto-scroll animation with configurable speed
+  // Check if mobile view
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const itemWidth = 300 + 16; // width + margin
-    const scrollWidth = teamData.length * itemWidth;
-
-    const animate = (timestamp) => {
-      if (!isPaused && !isDragging) {
-        // Only scroll if not recently scrolled by user
-        if (timestamp - lastScrollTime.current > 100) {
-          container.scrollLeft += scrollSpeed;
-
-          // Reset to start when reaching the duplicated portion
-          if (container.scrollLeft >= scrollWidth) {
-            container.scrollLeft = 0;
-          }
-        }
-      }
-      animationRef.current = requestAnimationFrame(animate);
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768);
     };
 
-    animationRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationRef.current);
-  }, [isPaused, isDragging, teamData.length, scrollSpeed]);
+    checkIfMobile();
+    window.addEventListener("resize", checkIfMobile);
+    return () => window.removeEventListener("resize", checkIfMobile);
+  }, []);
 
-  // Mouse event handlers
+  // Mobile navigation
+  const goToSlide = (index) => {
+    if (index < 0) index = teamData.length - 1;
+    if (index >= teamData.length) index = 0;
+    setCurrentIndex(index);
+  };
+
+  // Desktop scroll handlers
+  const scrollToItem = (direction) => {
+    if (!containerRef.current) return;
+
+    const container = containerRef.current;
+    const itemWidth = 300 + 16; // width + margin
+    const scrollAmount = direction === "left" ? -itemWidth : itemWidth;
+
+    container.scrollBy({
+      left: scrollAmount,
+      behavior: "smooth",
+    });
+  };
+
+  // Desktop drag handlers
   const handleMouseDown = (e) => {
     setIsDragging(true);
-    setIsPaused(true);
     startX.current = e.pageX - containerRef.current.offsetLeft;
     scrollLeft.current = containerRef.current.scrollLeft;
     document.body.style.cursor = "grabbing";
-    document.body.style.userSelect = "none";
   };
 
   const handleMouseMove = (e) => {
     if (!isDragging) return;
     const x = e.pageX - containerRef.current.offsetLeft;
-    const walk = (x - startX.current) * 3; // Increased sensitivity for faster dragging
-
-    containerRef.current.style.scrollBehavior = "auto";
+    const walk = (x - startX.current) * 2;
     containerRef.current.scrollLeft = scrollLeft.current - walk;
-    lastScrollTime.current = performance.now();
-  };
-
-  // Touch event handlers
-  const handleTouchStart = (e) => {
-    setIsDragging(true);
-    setIsPaused(true);
-    touchStartX.current = e.touches[0].clientX;
-    scrollLeft.current = containerRef.current.scrollLeft;
-  };
-
-  const handleTouchMove = (e) => {
-    if (!isDragging) return;
-    const x = e.touches[0].clientX;
-    const walk = (x - touchStartX.current) * 2.5; // Increased sensitivity for touch
-
-    containerRef.current.style.scrollBehavior = "auto";
-    containerRef.current.scrollLeft = scrollLeft.current - walk;
-    lastScrollTime.current = performance.now();
   };
 
   const endDrag = () => {
     setIsDragging(false);
     document.body.style.cursor = "";
-    document.body.style.userSelect = "";
-    containerRef.current.style.scrollBehavior = "smooth";
-
-    // Only resume auto-scroll if not currently scrolling
-    setTimeout(() => {
-      if (!isDragging) {
-        setIsPaused(false);
-      }
-    }, 300);
-  };
-
-  // Handle wheel events without pausing
-  const handleWheel = (e) => {
-    if (Math.abs(e.deltaY) < 5) return;
-
-    lastScrollTime.current = performance.now();
-    setIsPaused(true);
-
-    // Resume auto-scroll after a delay if not dragging
-    setTimeout(() => {
-      if (!isDragging) {
-        setIsPaused(false);
-      }
-    }, 1000);
   };
 
   return (
@@ -161,58 +112,134 @@ const TeamSection = () => {
           Our Expert Team
         </h2>
 
-        <div className="w-full relative">
-          <div
-            ref={containerRef}
-            className="w-full overflow-x-auto py-4 scrollbar-hide touch-auto"
-            style={{
-              scrollBehavior: "smooth",
-              WebkitOverflowScrolling: "touch",
-            }}
-            onWheel={handleWheel}
-          >
+        {/* Mobile View (Full-width cards) */}
+        {isMobile && (
+          <div className="w-full relative h-[500px]">
+            <button
+              onClick={() => goToSlide(currentIndex - 1)}
+              className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-gray-800/80 rounded-full p-2 text-white"
+            >
+              <FiChevronLeft size={20} />
+            </button>
+
+            <div className="w-full h-full overflow-hidden">
+              <div
+                className="flex w-full h-full transition-transform duration-300"
+                style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+              >
+                {teamData.map((member, index) => (
+                  <div key={index} className="flex-shrink-0 w-full h-full px-4">
+                    <div className="h-full bg-gray-800 rounded-xl p-8 flex flex-col items-center text-center border border-gray-700">
+                      <div className="w-32 h-32 rounded-full bg-blue-500/10 flex items-center justify-center mb-6">
+                        {member.icon}
+                      </div>
+                      <h3 className="text-2xl font-semibold text-white">
+                        {member.name}
+                      </h3>
+                      <p className="text-blue-400 text-lg mt-2">
+                        {member.role}
+                      </p>
+                      <p className="text-gray-300 text-base mt-4">
+                        {member.expertise}
+                      </p>
+                      <div className="mt-6 pt-6 border-t border-gray-700 w-full">
+                        <div className="flex justify-center space-x-6">
+                          <button className="text-blue-400 hover:text-blue-300">
+                            <FiCalendar size={20} />
+                          </button>
+                          <button className="text-blue-400 hover:text-blue-300">
+                            <FiUser size={20} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button
+              onClick={() => goToSlide(currentIndex + 1)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-gray-800/80 rounded-full p-2 text-white"
+            >
+              <FiChevronRight size={20} />
+            </button>
+
+            <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-2">
+              {teamData.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToSlide(index)}
+                  className={`w-2 h-2 rounded-full ${
+                    currentIndex === index ? "bg-blue-500" : "bg-gray-600"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Desktop View (Original multi-card layout) */}
+        {!isMobile && (
+          <div className="w-full relative">
+            <button
+              onClick={() => scrollToItem("left")}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-gray-800/80 hover:bg-gray-700/90 rounded-full p-3 text-white transition-all shadow-lg"
+            >
+              <FiChevronLeft size={24} />
+            </button>
+
             <div
-              className="flex w-max"
+              ref={containerRef}
+              className="w-full overflow-x-auto py-4 scrollbar-hide touch-auto"
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={endDrag}
               onMouseLeave={endDrag}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={endDrag}
             >
-              {duplicatedTeamData.map((member, index) => (
-                <div
-                  key={`${index}-${member.name}`}
-                  className="flex-shrink-0 w-[280px] mx-2 sm:w-[300px]"
-                >
-                  <div className="h-full bg-gray-800 rounded-xl p-6 flex flex-col items-center text-center border border-gray-700 hover:border-blue-500 transition-all duration-300">
-                    <div className="w-20 h-20 rounded-full bg-blue-500/10 flex items-center justify-center mb-4">
-                      {member.icon}
-                    </div>
-                    <h3 className="text-xl font-semibold text-white">
-                      {member.name}
-                    </h3>
-                    <p className="text-blue-400 text-sm mt-1">{member.role}</p>
-                    <p className="text-gray-300 text-sm mt-3">
-                      {member.expertise}
-                    </p>
-                    <div className="mt-4 pt-4 border-t border-gray-700 w-full">
-                      <div className="flex justify-center space-x-4">
-                        <button className="text-blue-400 hover:text-blue-300 transition">
-                          <FiCalendar />
-                        </button>
-                        <button className="text-blue-400 hover:text-blue-300 transition">
-                          <FiUser />
-                        </button>
+              <div className="flex w-max">
+                {teamData.map((member, index) => (
+                  <div
+                    key={index}
+                    className="flex-shrink-0 w-[280px] mx-2 sm:w-[300px]"
+                  >
+                    <div className="h-full bg-gray-800 rounded-xl p-6 flex flex-col items-center text-center border border-gray-700 hover:border-blue-500 transition-all duration-300">
+                      <div className="w-20 h-20 rounded-full bg-blue-500/10 flex items-center justify-center mb-4">
+                        {member.icon}
+                      </div>
+                      <h3 className="text-xl font-semibold text-white">
+                        {member.name}
+                      </h3>
+                      <p className="text-blue-400 text-sm mt-1">
+                        {member.role}
+                      </p>
+                      <p className="text-gray-300 text-sm mt-3">
+                        {member.expertise}
+                      </p>
+                      <div className="mt-4 pt-4 border-t border-gray-700 w-full">
+                        <div className="flex justify-center space-x-4">
+                          <button className="text-blue-400 hover:text-blue-300">
+                            <FiCalendar />
+                          </button>
+                          <button className="text-blue-400 hover:text-blue-300">
+                            <FiUser />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
+
+            <button
+              onClick={() => scrollToItem("right")}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-gray-800/80 hover:bg-gray-700/90 rounded-full p-3 text-white transition-all shadow-lg"
+            >
+              <FiChevronRight size={24} />
+            </button>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );
