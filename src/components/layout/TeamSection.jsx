@@ -1,15 +1,25 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
-import { FiUser, FiCode, FiAward, FiCalendar } from "react-icons/fi";
+import {
+  FiUser,
+  FiCode,
+  FiAward,
+  FiCalendar,
+  FiFastForward,
+  FiPause,
+  FiPlay,
+} from "react-icons/fi";
 
 const TeamSection = () => {
   const containerRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [scrollSpeed, setScrollSpeed] = useState(10); // Increased default speed
   const startX = useRef(0);
   const scrollLeft = useRef(0);
   const animationRef = useRef(null);
   const touchStartX = useRef(0);
+  const lastScrollTime = useRef(0);
 
   const teamData = [
     {
@@ -47,22 +57,24 @@ const TeamSection = () => {
   // Double the team data for seamless looping
   const duplicatedTeamData = [...teamData, ...teamData];
 
-  // Auto-scroll animation with increased speed
+  // Auto-scroll animation with configurable speed
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
     const itemWidth = 300 + 16; // width + margin
     const scrollWidth = teamData.length * itemWidth;
-    const scrollSpeed = 2.5; // Increased scroll speed
 
-    const animate = () => {
+    const animate = (timestamp) => {
       if (!isPaused && !isDragging) {
-        container.scrollLeft += scrollSpeed;
+        // Only scroll if not recently scrolled by user
+        if (timestamp - lastScrollTime.current > 100) {
+          container.scrollLeft += scrollSpeed;
 
-        // Reset to start when reaching the duplicated portion
-        if (container.scrollLeft >= scrollWidth) {
-          container.scrollLeft = 0;
+          // Reset to start when reaching the duplicated portion
+          if (container.scrollLeft >= scrollWidth) {
+            container.scrollLeft = 0;
+          }
         }
       }
       animationRef.current = requestAnimationFrame(animate);
@@ -70,7 +82,7 @@ const TeamSection = () => {
 
     animationRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animationRef.current);
-  }, [isPaused, isDragging, teamData.length]);
+  }, [isPaused, isDragging, teamData.length, scrollSpeed]);
 
   // Mouse event handlers
   const handleMouseDown = (e) => {
@@ -79,13 +91,17 @@ const TeamSection = () => {
     startX.current = e.pageX - containerRef.current.offsetLeft;
     scrollLeft.current = containerRef.current.scrollLeft;
     document.body.style.cursor = "grabbing";
+    document.body.style.userSelect = "none";
   };
 
   const handleMouseMove = (e) => {
     if (!isDragging) return;
     const x = e.pageX - containerRef.current.offsetLeft;
-    const walk = (x - startX.current) * 2; // Increased sensitivity
+    const walk = (x - startX.current) * 3; // Increased sensitivity for faster dragging
+
+    containerRef.current.style.scrollBehavior = "auto";
     containerRef.current.scrollLeft = scrollLeft.current - walk;
+    lastScrollTime.current = performance.now();
   };
 
   // Touch event handlers
@@ -99,18 +115,47 @@ const TeamSection = () => {
   const handleTouchMove = (e) => {
     if (!isDragging) return;
     const x = e.touches[0].clientX;
-    const walk = (x - touchStartX.current) * 1.5; // Increased sensitivity
+    const walk = (x - touchStartX.current) * 2.5; // Increased sensitivity for touch
+
+    containerRef.current.style.scrollBehavior = "auto";
     containerRef.current.scrollLeft = scrollLeft.current - walk;
+    lastScrollTime.current = performance.now();
   };
 
   const endDrag = () => {
     setIsDragging(false);
     document.body.style.cursor = "";
-    setTimeout(() => setIsPaused(false), 1000);
+    document.body.style.userSelect = "";
+    containerRef.current.style.scrollBehavior = "smooth";
+
+    // Only resume auto-scroll if not currently scrolling
+    setTimeout(() => {
+      if (!isDragging) {
+        setIsPaused(false);
+      }
+    }, 300);
+  };
+
+  // Handle wheel events without pausing
+  const handleWheel = (e) => {
+    if (Math.abs(e.deltaY) < 5) return;
+
+    lastScrollTime.current = performance.now();
+    setIsPaused(true);
+
+    // Resume auto-scroll after a delay if not dragging
+    setTimeout(() => {
+      if (!isDragging) {
+        setIsPaused(false);
+      }
+    }, 1000);
   };
 
   return (
-    <section id="team" className="py-16 bg-gray-900 w-full overflow-hidden">
+    <section
+      id="team"
+      className="py-16 bg-gray-900 w-full overflow-hidden relative"
+    >
       <div className="container mx-auto px-4 w-full">
         <h2 className="text-3xl md:text-4xl font-bold mb-10 md:mb-12 text-center text-white">
           Our Expert Team
@@ -124,6 +169,7 @@ const TeamSection = () => {
               scrollBehavior: "smooth",
               WebkitOverflowScrolling: "touch",
             }}
+            onWheel={handleWheel}
           >
             <div
               className="flex w-max"

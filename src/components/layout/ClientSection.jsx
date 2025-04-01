@@ -95,7 +95,7 @@ const ClientsSection = () => {
   const handleMouseMove = (e) => {
     if (!isDragging) return;
     const x = e.pageX - containerRef.current.offsetLeft;
-    const walk = (x - startX.current) * 1;
+    const walk = (x - startX.current) * 3;
     containerRef.current.scrollLeft = scrollLeft.current - walk;
   };
 
