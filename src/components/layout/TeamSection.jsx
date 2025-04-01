@@ -9,6 +9,7 @@ const TeamSection = () => {
   const startX = useRef(0);
   const scrollLeft = useRef(0);
   const animationRef = useRef(null);
+  const touchStartX = useRef(0);
 
   const teamData = [
     {
@@ -41,21 +42,19 @@ const TeamSection = () => {
       expertise: "Digital Content Expert",
       icon: <FiCode className="text-blue-400" />,
     },
-
-    // Add more team members as needed
   ];
 
   // Double the team data for seamless looping
   const duplicatedTeamData = [...teamData, ...teamData];
 
-  // Auto-scroll animation
+  // Auto-scroll animation with increased speed
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
     const itemWidth = 300 + 16; // width + margin
     const scrollWidth = teamData.length * itemWidth;
-    let scrollSpeed = 1;
+    const scrollSpeed = 2.5; // Increased scroll speed
 
     const animate = () => {
       if (!isPaused && !isDragging) {
@@ -73,7 +72,7 @@ const TeamSection = () => {
     return () => cancelAnimationFrame(animationRef.current);
   }, [isPaused, isDragging, teamData.length]);
 
-  // Manual scroll handlers
+  // Mouse event handlers
   const handleMouseDown = (e) => {
     setIsDragging(true);
     setIsPaused(true);
@@ -85,7 +84,22 @@ const TeamSection = () => {
   const handleMouseMove = (e) => {
     if (!isDragging) return;
     const x = e.pageX - containerRef.current.offsetLeft;
-    const walk = (x - startX.current) * 2;
+    const walk = (x - startX.current) * 2; // Increased sensitivity
+    containerRef.current.scrollLeft = scrollLeft.current - walk;
+  };
+
+  // Touch event handlers
+  const handleTouchStart = (e) => {
+    setIsDragging(true);
+    setIsPaused(true);
+    touchStartX.current = e.touches[0].clientX;
+    scrollLeft.current = containerRef.current.scrollLeft;
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging) return;
+    const x = e.touches[0].clientX;
+    const walk = (x - touchStartX.current) * 1.5; // Increased sensitivity
     containerRef.current.scrollLeft = scrollLeft.current - walk;
   };
 
@@ -97,7 +111,7 @@ const TeamSection = () => {
 
   return (
     <section id="team" className="py-16 bg-gray-900 w-full overflow-hidden">
-      <div className="container mx-auto px-0 w-full">
+      <div className="container mx-auto px-4 w-full">
         <h2 className="text-3xl md:text-4xl font-bold mb-10 md:mb-12 text-center text-white">
           Our Expert Team
         </h2>
@@ -105,25 +119,26 @@ const TeamSection = () => {
         <div className="w-full relative">
           <div
             ref={containerRef}
-            className="w-full overflow-x-hidden py-4 scrollbar-hide"
-            style={{ scrollBehavior: "smooth" }}
+            className="w-full overflow-x-auto py-4 scrollbar-hide touch-auto"
+            style={{
+              scrollBehavior: "smooth",
+              WebkitOverflowScrolling: "touch",
+            }}
           >
             <div
-              className="flex w-max cursor-grab active:cursor-grabbing"
+              className="flex w-max"
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={endDrag}
               onMouseLeave={endDrag}
-              onTouchStart={(e) => handleMouseDown(e.touches[0])}
-              onTouchMove={(e) => handleMouseMove(e.touches[0])}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
               onTouchEnd={endDrag}
             >
               {duplicatedTeamData.map((member, index) => (
                 <div
                   key={`${index}-${member.name}`}
-                  className="flex-shrink-0 w-[300px] mx-2"
-                  onMouseEnter={() => setIsPaused(true)}
-                  onMouseLeave={() => !isDragging && setIsPaused(false)}
+                  className="flex-shrink-0 w-[280px] mx-2 sm:w-[300px]"
                 >
                   <div className="h-full bg-gray-800 rounded-xl p-6 flex flex-col items-center text-center border border-gray-700 hover:border-blue-500 transition-all duration-300">
                     <div className="w-20 h-20 rounded-full bg-blue-500/10 flex items-center justify-center mb-4">

@@ -69,7 +69,7 @@ const ClientsSection = () => {
 
     const animate = () => {
       if (!isPaused && !isDragging) {
-        container.scrollLeft += 0.8;
+        container.scrollLeft += 0;
 
         // Reset for infinite loop without expanding container
         if (container.scrollLeft >= container.scrollWidth / 2) {
@@ -95,7 +95,7 @@ const ClientsSection = () => {
   const handleMouseMove = (e) => {
     if (!isDragging) return;
     const x = e.pageX - containerRef.current.offsetLeft;
-    const walk = (x - startX.current) * 2;
+    const walk = (x - startX.current) * 1;
     containerRef.current.scrollLeft = scrollLeft.current - walk;
   };
 
@@ -133,7 +133,7 @@ const ClientsSection = () => {
                 <div
                   key={`${index}-${client.name}`}
                   className="flex-shrink-0 w-[300px] mx-2"
-                  onMouseEnter={() => setIsPaused(true)}
+                  onMouseEnter={() => setIsPaused(false)}
                   onMouseLeave={() => !isDragging && setIsPaused(false)}
                 >
                   <div className="h-full bg-gray-700 rounded-xl p-6 border border-gray-600 hover:border-blue-500 transition-all duration-300">
