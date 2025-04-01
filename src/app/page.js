@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./globals.css";
 import Head from "next/head";
 import AOS from "aos";
@@ -22,38 +22,9 @@ import {
   FiBriefcase,
   FiCalendar,
 } from "react-icons/fi";
-
-// Client Card Component
-const ClientCard = ({ client, index }) => (
-  <div
-    className="flex-shrink-0 w-72 md:w-full bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl p-6 border border-gray-600 hover:border-blue-500 transition-all duration-300 shadow-lg hover:shadow-xl"
-    data-aos="fade-up"
-    data-aos-delay={index * 100}
-  >
-    <div className="flex items-start mb-4">
-      <div className="bg-blue-500/10 p-3 rounded-lg mr-4">
-        <FiBriefcase className="text-blue-400 text-xl" />
-      </div>
-      <div>
-        <h3 className="text-xl font-semibold text-white">{client.name}</h3>
-        <p className="text-blue-400 text-sm flex items-center mt-1">
-          <FiMapPin className="mr-1" />
-          {client.location}
-        </p>
-      </div>
-    </div>
-    <p className="text-gray-300 text-sm mb-4">{client.description}</p>
-    <div className="flex justify-between items-center text-xs text-gray-400">
-      <span className="flex items-center">
-        <FiCalendar className="mr-1" />
-        Since {client.since}
-      </span>
-      <span className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full">
-        {client.category}
-      </span>
-    </div>
-  </div>
-);
+import ClientsSection from "@/components/layout/ClientSection";
+import TeamSection from "@/components/layout/TeamSection";
+import TechnologySection from "@/components/layout/TechnologySection";
 
 function Page() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -63,57 +34,6 @@ function Page() {
   }, []);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
-
-  // Client data
-  const clientsData = [
-    {
-      name: "Compugraphs Softech",
-      description:
-        "Enterprise IT solutions and custom software development partner",
-      location: "Bhubaneswar",
-      since: "2020",
-      category: "Technology",
-    },
-    {
-      name: "Divisha LandTreat",
-      description:
-        "Innovative real estate and sustainable land development solutions",
-      location: "Bhubaneswar",
-      since: "2021",
-      category: "Real Estate",
-    },
-    {
-      name: "Amilo AI",
-      description:
-        "Cutting-edge artificial intelligence and machine learning solutions",
-      location: "Bangalore",
-      since: "2022",
-      category: "AI/ML",
-    },
-    {
-      name: "Skillanto",
-      description:
-        "Next-generation e-learning platform for professional skill development",
-      location: "Bhubaneswar",
-      since: "2021",
-      category: "EdTech",
-    },
-    {
-      name: "Genica",
-      description:
-        "Digital transformation and innovative technology consulting services",
-      location: "Bhubaneswar",
-      since: "2020",
-      category: "Consulting",
-    },
-    {
-      name: "Vernacular Medium",
-      description: "Regional language education technology platform",
-      location: "Bhubaneswar",
-      since: "2023",
-      category: "EdTech",
-    },
-  ];
 
   return (
     <div className="font-sans bg-black text-white">
@@ -278,130 +198,10 @@ function Page() {
         </div>
       </section>
 
-      {/* Clients Section */}
-      {/* Clients Section */}
-      <section id="clients" className="py-20 bg-gray-800 overflow-hidden">
-        <div className="container mx-auto px-4">
-          <h2
-            className="text-4xl font-bold mb-12 text-center"
-            data-aos="fade-up"
-          >
-            Our Esteemed Clients
-          </h2>
-
-          {/* Auto-scrolling container */}
-          <div className="relative">
-            {/* Desktop - Continuous scroll */}
-            <div className="hidden md:block overflow-hidden">
-              <div className="flex animate-[scroll_30s_linear_infinite] hover:animate-[scroll_30s_linear_infinite_paused]">
-                {[...clientsData, ...clientsData].map((client, index) => (
-                  <div
-                    key={`${index}-${client.name}`}
-                    className="px-4 min-w-[33.333%]"
-                  >
-                    <ClientCard
-                      client={client}
-                      index={index % clientsData.length}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Mobile - Horizontal scroll with gradient edges */}
-            <div className="md:hidden relative">
-              <div className="flex overflow-x-auto pb-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] space-x-4 px-2">
-                {clientsData.map((client, index) => (
-                  <ClientCard key={index} client={client} index={index} />
-                ))}
-              </div>
-              <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-gray-800 to-transparent pointer-events-none"></div>
-              <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-gray-800 to-transparent pointer-events-none"></div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ClientsSection />
       {/* Team Section */}
-      <section id="team" className="py-20 bg-gray-900 text-center">
-        <div className="container mx-auto">
-          <h2 className="text-4xl font-bold mb-12" data-aos="fade-up">
-            Our Team
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              {
-                name: "Chandan Samantaray",
-                role: "Founder & CEO",
-                description:
-                  "Visionary leader with 10+ years of industry experience",
-              },
-              {
-                name: "Rohit Singh",
-                role: "CTO",
-                description:
-                  "Technology expert specializing in scalable architectures",
-              },
-              {
-                name: "Biswa Ranjan Sahoo",
-                role: "Project Manager",
-                description: "Ensures timely delivery with exceptional quality",
-              },
-              {
-                name: "Tapan Biswal",
-                role: "Team Lead",
-                description:
-                  "Leads development teams with technical excellence",
-              },
-              {
-                name: "Khirod Bhanja",
-                role: "Digital Marketing Head",
-                description:
-                  "Drives growth through innovative marketing strategies",
-              },
-            ].map((member, index) => (
-              <div
-                key={index}
-                className="p-8 bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition duration-300"
-                data-aos="fade-up"
-                data-aos-delay={index * 100}
-              >
-                <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gray-700 flex items-center justify-center text-2xl font-bold">
-                  {member.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
-                </div>
-                <h3 className="text-2xl font-semibold mb-2">{member.name}</h3>
-                <p className="text-blue-400 mb-3">{member.role}</p>
-                <p className="text-gray-300 text-sm">{member.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Technology Section */}
-      <section id="technology" className="py-20 bg-gray-800 text-center">
-        <div className="container mx-auto">
-          <h2 className="text-4xl font-bold mb-12" data-aos="fade-up">
-            Our Technology Stack
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {["React", "Node.js", "Python", "AWS"].map((tech, index) => (
-              <div
-                key={index}
-                className="p-8 bg-gray-700 rounded-lg shadow-lg hover:shadow-xl transition duration-300"
-                data-aos="fade-up"
-              >
-                <h3 className="text-2xl font-semibold mb-4">{tech}</h3>
-                <p className="text-gray-300">
-                  Cutting-edge technology for modern solutions.
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <TechnologySection />
+      <TeamSection />
 
       {/* About Section */}
       <section id="about" className="py-20 bg-gray-900 text-center">

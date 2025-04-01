@@ -7,14 +7,9 @@ module.exports = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-      },
       animation: {
-        scroll: "scroll 30s linear infinite",
-        "scroll-paused": "scroll 30s linear infinite paused",
+        scroll: "scroll 40s linear infinite",
+        "scroll-paused": "scroll 40s linear infinite paused",
       },
       keyframes: {
         scroll: {
@@ -24,6 +19,5 @@ module.exports = {
       },
     },
   },
-
   plugins: [],
 };
