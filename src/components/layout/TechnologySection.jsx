@@ -57,7 +57,7 @@ const TechnologySection = () => {
   }, []);
 
   return (
-    <section className="py-12s bg-gray-900 overflow-hidden">
+    <section className="py-12 bg-gray-900 overflow-hidden">
       <div className="container mx-auto px-4">
         <h2 className="text-4xl font-bold mb-12 text-center text-white">
           Our Technology Stack
