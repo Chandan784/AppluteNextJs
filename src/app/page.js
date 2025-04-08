@@ -25,6 +25,7 @@ import {
 import ClientsSection from "@/components/layout/ClientSection";
 import TeamSection from "@/components/layout/TeamSection";
 import TechnologySection from "@/components/layout/TechnologySection";
+import PortfolioSection from "@/components/layout/Portfolio";
 
 function Page() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -163,40 +164,7 @@ function Page() {
       </section>
 
       {/* Portfolio Section */}
-      <section id="portfolio" className="py-20 bg-gray-900 text-center">
-        <div className="container mx-auto">
-          <h2 className="text-4xl font-bold mb-12" data-aos="fade-up">
-            Our Portfolio
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "E-Commerce Platform",
-                description:
-                  "A scalable e-commerce solution for global brands.",
-              },
-              {
-                title: "Healthcare App",
-                description:
-                  "A mobile app for patient management and telemedicine.",
-              },
-              {
-                title: "Fintech Dashboard",
-                description: "A real-time financial analytics dashboard.",
-              },
-            ].map((project, index) => (
-              <div
-                key={index}
-                className="p-8 bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition duration-300"
-                data-aos="fade-up"
-              >
-                <h3 className="text-2xl font-semibold mb-4">{project.title}</h3>
-                <p className="text-gray-300">{project.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <PortfolioSection />
 
       <ClientsSection />
       {/* Team Section */}
